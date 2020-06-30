@@ -96,45 +96,65 @@ router.post('/insertUrlParams', upload.none(), (req,res)=>{
 
 
 
-router.post("/sendGmail", async (req, res) => {
+const getfUrl = async (req) => {
+  let fUrl = (req.params.furl) || 0;
 
-    const email = req.body.email
+  const output = {
+      rows: []
+  }
+     
+  const sql = `SELECT * FROM forget_password WHERE fUrl = ${fUrl}`;
+  const [r1] = await db.query(sql);    
+  if(r1) output.rows = r1;
 
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        secure: true,
-        auth: {
-          type: "OAuth2",
-          user: process.env.ACCOUNT,
-          clientId: process.env.CLINENTID,
-          clientSecret: process.env.CLINENTSECRET,
-          refreshToken: process.env.REFRESHTOKEN,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
+  return output;
+}
 
-      var mailOptions = {
-        from: '"Mano抹茶選物社群平台" <0126cloud@gmail.com>',
-        to: email,
-        subject: "重新設定您的密碼 From:Mano抹茶選物社群平台",
-        html: `<div><img src='cid:unique@kreata.ee' alt=''><p>信件發送成功</p></div>`,
-        attachments: [{
-          filename: 'm.jpg',
-          path: __dirname + '/public/m.jpg',
-          cid: 'unique@kreata.ee'
-      }]
-      };
 
-      // 準備發送信件
-      transporter.sendMail(mailOptions, function (err, info) {
-        if (err) {
-          return console.log(err);
-        }
-      });
+router.get("/url/:furl?", async (req, res) => {
+  const output = await getfUrl(req);
+  res.json(output);
 })
 
+
+
+router.put('/changepassword/:username?', upload.none(), (req,res)=>{
+
+  let username = (req.params.username) || "";
+
+
+  const output = {
+      success: false
+  }
+  const sql = `UPDATE member SET ? WHERE email = "${username}"`;
+
+  db.query(sql, [req.body])
+      .then(([r])=>{
+          output.results = r;
+          if(r.affectedRows && r.insertId){
+              output.success = true;
+          }
+          res.json(output);
+      })
+})
+
+
+
+router.delete('/deleteUrl', upload.none(), (req,res)=>{
+
+
+      const sql2 = `DELETE FROM forget_password WHERE ?`;
+      db.query(sql2, [req.body])
+      .then(([r])=>{
+          output.results = r;
+          if(r.affectedRows && r.insertId){
+              output.success = true;       
+
+          }
+          res.json(output)
+      })
+
+})
 
 
 
