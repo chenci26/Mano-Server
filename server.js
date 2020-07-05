@@ -2,11 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const moment = require("moment");
 
-
-
-
 const app = express();
-
 
 // parse application/x-www-form-urlencoded 
 app.use(express.urlencoded({ extended: false })); 

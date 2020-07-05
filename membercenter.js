@@ -66,7 +66,7 @@ router.get('/coupon/:memberId?',(req,res)=>{
 router.get('/couponused/:memberId?',(req,res)=>{
     const memberId = req.params.memberId || ''
     // res.send('ok')
-    db.query(`SELECT * FROM rel_coupon_member INNER JOIN marketing ON rel_coupon_member.memberId ='${memberId}'AND rel_coupon_member.discountID=marketing.discountID AND use_times > 1  
+    db.query(`SELECT * FROM rel_coupon_member INNER JOIN marketing ON rel_coupon_member.memberId ='${memberId}'AND rel_coupon_member.discountID=marketing.discountID AND use_times > 0  
     ORDER BY rel_coupon_member.created_at  DESC`)
         .then(([rows])=>{
             res.json(rows);
@@ -146,6 +146,25 @@ router.get('/memberordercoursedetail/:orderId?',(req,res)=>{
             res.json(rows);
         })
 })
+
+
+router.post('/coupon/:memberId?',(req,res)=>{
+    const memberId = req.params.memberId || ''
+    //console.log(req.params.memberId)
+    db.query(`INSERT INTO rel_coupon_member SET memberId= '${memberId}' , discountID='D309' , use_times=0`)
+        .then(res.send(`ok, ${memberId}`)
+        )
+})
+
+//新增折價券資料July5th
+router.post('/marketcoupon/:memberId?',(req,res)=>{
+    const memberId = req.params.memberId || ''
+    //console.log(req.params.memberId)
+    db.query(`INSERT INTO rel_coupon_member SET memberId= '${memberId}' , discountID='D310' , use_times=0`)
+        .then(res.send(`ok, ${memberId}`)
+        )
+})
+
 
 //以下的目前沒用到
 // router.get("/:memberid?/:main?", async (req, res) => {
